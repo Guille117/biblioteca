@@ -1,0 +1,69 @@
+package com.example.Biblioteca.modelo;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter @Setter
+public class Libro {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_libro")
+    private Long idLibro;
+
+    @NotNull
+    private String nombre;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "id_autor", referencedColumnName = "idAutor")
+    @Cascade(CascadeType.PERSIST)
+    private Autor autor;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "id_categoria", referencedColumnName = "idCategoria")
+    @Cascade(CascadeType.PERSIST)
+    private Categoria categoria; 
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "id_editorial", referencedColumnName = "idEditorial")
+    @Cascade(CascadeType.PERSIST)
+    private Editorial editorial;
+
+    @NotNull
+    @Size(min = 4, max = 4)
+    @Pattern(regexp = "\\d+")
+    private String añoPublicacion;
+
+    @NotNull
+    private int edicion;
+
+    @NotNull
+    private int cantidad;
+
+    private Boolean enPrestamo = null;
+
+
+
+
+    
+}
