@@ -2,15 +2,14 @@ package com.example.Biblioteca.modelo;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +27,8 @@ public class Prestamo {
     private Long idPrestamo;
 
     @NotNull
-    @OneToMany
-    @JoinColumn(name = "id_libro")
+    @ManyToMany
+    @JoinTable(name = "prestamo_libro", joinColumns = @JoinColumn(name = "id_prestamo"), inverseJoinColumns = @JoinColumn(name = "id_libro"))
     private List<Libro> libros;
 
     @NotNull
@@ -39,7 +38,6 @@ public class Prestamo {
 
     private LocalDate fechaInicio = LocalDate.now();
 
-    @Future
     @NotNull
     private LocalDate fechaVencimiento;
 

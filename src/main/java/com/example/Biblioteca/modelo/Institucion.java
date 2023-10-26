@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +20,8 @@ public class Institucion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInstitucion;
 
-    @NotNull
     private String nombre;
 
-    @NotNull
     @Embedded
     @Valid
     private Direccion direccion;

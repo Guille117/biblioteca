@@ -9,4 +9,5 @@ import com.example.Biblioteca.modelo.Editorial;
 @Repository
 public interface EditorialRepository extends JpaRepository<Editorial, Long>{
     public abstract Editorial findByNombre(String nombreEditorial);
+    public abstract boolean existsByNombre(String nombre);
 }

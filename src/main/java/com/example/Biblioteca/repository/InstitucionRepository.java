@@ -7,4 +7,6 @@ import com.example.Biblioteca.modelo.Institucion;
 @Repository
 public interface InstitucionRepository extends JpaRepository<Institucion, Long>{
     public abstract Institucion findByNombre(String nombreInsitucion);
+    public abstract boolean existsByNombre(String nombreInstitucion);
+    
 }

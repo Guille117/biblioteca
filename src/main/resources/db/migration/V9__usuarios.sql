@@ -1,4 +1,4 @@
-CREATE TABLE usuarios(
+CREATE TABLE usuario(
     id_usuario BIGINT AUTO_INCREMENT,
     alias VARCHAR(40) NOT NULL,
     contraseña VARCHAR(400) NOT NULL,

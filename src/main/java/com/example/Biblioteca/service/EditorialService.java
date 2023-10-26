@@ -23,7 +23,7 @@ public class EditorialService implements IGenericService<Editorial>{
     }
 
     @Override
-    public List<Editorial> obtrnerTodos() {
+    public List<Editorial> obtenerTodos() {
         return editRepo.findAll();
     }
 
@@ -32,8 +32,8 @@ public class EditorialService implements IGenericService<Editorial>{
         editRepo.deleteById(id);
     }
 
-    @Override
-    public Editorial obtenerPorNombre(String nombre) {
-        return editRepo.findByNombre(nombre);
+    public Editorial buscarNombre(String nombreEdit){
+        return editRepo.findByNombre(nombreEdit);
     }
+
 }

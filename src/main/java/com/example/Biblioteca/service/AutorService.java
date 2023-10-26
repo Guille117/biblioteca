@@ -3,10 +3,12 @@ package com.example.Biblioteca.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.Biblioteca.modelo.Autor;
 import com.example.Biblioteca.repository.AutorRepository;
 
+@Service
 public class AutorService implements IGenericService<Autor>{
 
     @Autowired
@@ -23,7 +25,7 @@ public class AutorService implements IGenericService<Autor>{
     }
 
     @Override
-    public List<Autor> obtrnerTodos() {
+    public List<Autor> obtenerTodos() {
        return autoRepo.findAll();
     }
 
@@ -32,9 +34,8 @@ public class AutorService implements IGenericService<Autor>{
         autoRepo.deleteById(idAutor);
     }
 
-    @Override
-    public Autor obtenerPorNombre(String nombre) {
-        return autoRepo.findByNombre(nombre);
+    public Autor buscarNombre(String nombre, String apellido){
+        return autoRepo.findByNombreAndApellido(nombre, apellido);
     }
     
 }

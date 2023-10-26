@@ -17,11 +17,8 @@ public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idAutor;
-
+    
     private String nombre;
+    
     private String apellido;
-
-    public String nombreCompleto(){
-        return this.nombre + this.apellido;
-    }
 }

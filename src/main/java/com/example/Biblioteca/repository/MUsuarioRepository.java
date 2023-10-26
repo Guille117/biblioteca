@@ -7,5 +7,6 @@ import com.example.Biblioteca.modelo.MUsuario;
 
 @Repository
 public interface MUsuarioRepository extends JpaRepository<MUsuario, Long>{
-    
+    public abstract MUsuario findByAlias(String alias);
+    public abstract boolean existsByAlias(String alias);
 }

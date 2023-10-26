@@ -1,4 +1,4 @@
-package com.example.Biblioteca.service.sercicioInstitucion;
+package com.example.Biblioteca.service;
 
 import java.util.List;
 
@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 import com.example.Biblioteca.modelo.Institucion;
 import com.example.Biblioteca.repository.InstitucionRepository;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @Service
-public class InstitucionService implements IInsitucionService{
+public class InstitucionService implements IGenericService<Institucion>{
 
     @Autowired
     private InstitucionRepository insRepo;
@@ -23,16 +21,12 @@ public class InstitucionService implements IInsitucionService{
 
     @Override
     public Institucion obtenerUno(Long id) {
-        return insRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Institución no encontrada"));
+        return insRepo.findById(id).orElse(null);
     }
 
     @Override
-    public List<Institucion> obtrnerTodos() {
+    public List<Institucion> obtenerTodos() {
         return insRepo.findAll();
-    }
-
-    @Override
-    public void actualizar(Long id) {
     }
 
     @Override
@@ -40,8 +34,4 @@ public class InstitucionService implements IInsitucionService{
         insRepo.deleteById(id);
     }
 
-    @Override
-    public Institucion obtenerPorNombre(String nombre) {
-        return insRepo.findByNombre(nombre);
-    }
 }

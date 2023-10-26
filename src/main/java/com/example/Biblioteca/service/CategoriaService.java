@@ -25,7 +25,7 @@ public class CategoriaService implements IGenericService<Categoria>{
     }
 
     @Override
-    public List<Categoria> obtrnerTodos() {
+    public List<Categoria> obtenerTodos() {
        return catRepo.findAll();
     }
 
@@ -34,9 +34,9 @@ public class CategoriaService implements IGenericService<Categoria>{
         catRepo.deleteById(id);
     }
 
-    @Override
-    public Categoria obtenerPorNombre(String nombre) {
-        return catRepo.findByNombre(nombre);
+    public Categoria buscarNombre(String nombreCat){
+        return catRepo.findByNombre(nombreCat);
     }
+
     
 }

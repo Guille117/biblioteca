@@ -1,10 +1,9 @@
 package com.example.Biblioteca.modelo;
 
 import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -13,10 +12,10 @@ import lombok.Setter;
 @Getter @Setter
 @Embeddable
 public class Direccion {
-    @NotNull
-    private String NumCalle;
+    @Min(value = 1)
+    private Integer numCalle;
     
-    @NotNull
-    private String NumAvenida;
+    @Min(value = 1)
+    private Integer numAvenida;
 
 }

@@ -1,5 +1,8 @@
 package com.example.Biblioteca.modelo;
 
+
+import java.time.LocalDate;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -10,6 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -52,18 +57,25 @@ public class Libro {
     @NotNull
     @Size(min = 4, max = 4)
     @Pattern(regexp = "\\d+")
-    private String añoPublicacion;
+    private String anioPublicacion;
 
     @NotNull
-    private int edicion;
+    private Integer edicion;
 
     @NotNull
-    private int cantidad;
+    @Min(value =  0)
+    @Max(value =  7)
+    private Integer cantidad;
 
-    private Boolean enPrestamo = null;
+    private Integer disponible;
+
+    private Integer enPrestamo = 0;
+
+    private LocalDate fechaIngreso = LocalDate.now();
 
 
+    public void iniciarDisponible(){
+        this.disponible = this.cantidad;
+    }
 
-
-    
 }
