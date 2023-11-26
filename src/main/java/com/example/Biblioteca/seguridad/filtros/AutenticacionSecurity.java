@@ -2,15 +2,19 @@ package com.example.Biblioteca.seguridad.filtros;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -90,4 +94,22 @@ public class AutenticacionSecurity extends UsernamePasswordAuthenticationFilter{
 
     }
     
+
+    private final ObjectMapper ob = new ObjectMapper();
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, 
+                                            HttpServletResponse response, 
+                                            AuthenticationException exception)throws IOException, ServletException, JsonProcessingException, java.io.IOException{
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json;charset=UTF-8");
+
+        Map<String, Object> responseBody = new HashMap<>();
+
+        responseBody.put("error", "Fallo de autenticación");
+        responseBody.put("message", "Alias o contraseña incorrectos");
+
+        response.getWriter().write(ob.writeValueAsString(responseBody));
+        
+    }
 }

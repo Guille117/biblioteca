@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
+
+import com.example.Biblioteca.Excepciones.ValidacionException;
 import com.example.Biblioteca.modelo.Libro;
 import com.example.Biblioteca.modelo.Prestamo;
-
-import jakarta.validation.ValidationException;
 
 @Component
 public class ValidarLibro implements IValidarPrestamo{
@@ -20,7 +20,7 @@ public class ValidarLibro implements IValidarPrestamo{
 
         for(Libro l: libros){
             if(!verificados.add(l.getIdLibro())){
-                throw new ValidationException("No se permite prestar dos o más libros iguales");
+                throw new ValidacionException("Libros", "No se permite prestar dos o más libros iguales");
             }
         }
     }

@@ -2,10 +2,11 @@ package com.example.Biblioteca.validacion.validarLector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.example.Biblioteca.Excepciones.ValidacionException;
 import com.example.Biblioteca.modelo.Lector;
 import com.example.Biblioteca.repository.InstitucionRepository;
 
-import jakarta.validation.ValidationException;
 
 @Component
 public class ValidarIdInsti implements ValidarLector{
@@ -20,7 +21,7 @@ public class ValidarIdInsti implements ValidarLector{
                 existe = insRepo.existsById(lector.getInstitucion().getIdInstitucion());
             }
             if(!existe && lector.getInstitucion().getNombre() == null){
-                throw new ValidationException("No existe registro de esta institución, ingrese nombre y dirección para crear registro");
+                throw new ValidacionException("Institución", "No existe registro de esta institución, ingrese nombre y dirección para crear registro");
             }
             
         }

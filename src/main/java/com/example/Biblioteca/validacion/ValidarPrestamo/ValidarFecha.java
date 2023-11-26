@@ -4,9 +4,8 @@ import java.time.LocalDate;
 
 import org.springframework.stereotype.Component;
 
+import com.example.Biblioteca.Excepciones.ValidacionException;
 import com.example.Biblioteca.modelo.Prestamo;
-
-import jakarta.validation.ValidationException;
 
 @Component
 public class ValidarFecha implements IValidarPrestamo{
@@ -16,7 +15,7 @@ public class ValidarFecha implements IValidarPrestamo{
         LocalDate fecha = p.getFechaVencimiento();
 
         if(fecha.isBefore(LocalDate.now()) || fecha.isAfter(LocalDate.now().plusDays(5))){
-            throw new ValidationException("Únicamente se permite prestar los libros por un plazo de 5 días");
+            throw new ValidacionException("Fecha de vencimiento", "Únicamente se permite prestar los libros por un plazo de 5 días");
         }
     }
     

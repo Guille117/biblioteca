@@ -26,7 +26,7 @@ public class MUsuarioService implements IGenericService<MUsuario>{
     @Override
     public void guardar(MUsuario usu) {
         if(usuRepo.existsByAlias(usu.getAlias())){
-            throw new ElementoRepetidoException("Este alias de usuario ya está en uso");
+            throw new ElementoRepetidoException("alias","Este alias de usuario ya está en uso");
         }else{
             ROL rol = (usu.getRol().getIdRol() != null) ? 
                 rolRepo.findById(usu.getRol().getIdRol()).orElse(null) :

@@ -21,12 +21,12 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuario")
+@PreAuthorize("hasRole('ADMIN')")
 public class MUsuarioController {
     @Autowired
     private MUsuarioService usuServ;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<MUsuario> guardarUsuario(@Valid @RequestBody MUsuario usu, UriComponentsBuilder ur){
         usuServ.guardar(usu);
         URI url = ur.path("/usuario/{idUsuario}").buildAndExpand(usu.getIdUsuario()).toUri();
@@ -43,11 +43,11 @@ public class MUsuarioController {
         return ResponseEntity.ok().body(usuServ.obtenerUno(idUsuario));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{idUsuario}")
     public ResponseEntity<?> eliminar(@PathVariable Long idUsuario){
         usuServ.eliminar(idUsuario);
         return ResponseEntity.noContent().build();
     }
+
 
 }
