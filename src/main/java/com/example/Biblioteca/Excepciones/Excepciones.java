@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,14 +40,5 @@ public class Excepciones {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> accesoDenegado(){
-        return ResponseEntity.status(403).body("Este usuario no cuenta con las credenciales para acceder");
-    }
-
-    @ExceptionHandler(SessionAuthenticationException.class)
-    public ResponseEntity<String> sesionExpirada(){
-        return ResponseEntity.status(401).body("Sesión expirada, vuelva a iniciar sesión"); 
-    }
 
 }
