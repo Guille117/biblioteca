@@ -17,23 +17,26 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.Biblioteca.dto.DtoPrestamo;
+import com.example.Biblioteca.dto.PrestamoDto.DtoPrestamoIngreso;
 import com.example.Biblioteca.modelo.Prestamo;
 import com.example.Biblioteca.service.servicioPrestamo.IPrestamoService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/prestamo")
+@SecurityRequirement(name = "bearer-key")
 public class PrestamoController {
     
     @Autowired
     private IPrestamoService presService;
 
     @PostMapping
-    public ResponseEntity<Prestamo> guardarPres(@Valid @RequestBody Prestamo pres, UriComponentsBuilder ur){
-        presService.guardar(pres);
-        URI url = ur.path("/prestamo/{idPrestamo}").buildAndExpand(pres.getIdPrestamo()).toUri();
-        return ResponseEntity.created(url).body(pres);
+    public ResponseEntity<Prestamo> guardarPres(@Valid @RequestBody DtoPrestamoIngreso pres, UriComponentsBuilder ur){
+        Prestamo pres1 = presService.guardarPrestamo(pres);
+        URI url = ur.path("/prestamo/{idPrestamo}").buildAndExpand(pres1.getIdPrestamo()).toUri();
+        return ResponseEntity.created(url).body(pres1);
     }
 
     @GetMapping("/{idPrestamo}")
@@ -53,14 +56,14 @@ public class PrestamoController {
 
     @PutMapping("/finalizarPrestamo/{idPrestamo}")
     public ResponseEntity<?> finalizarPrestamo(@PathVariable Long idPrestamo){
-        presService.finalizarPrestamo(presService.obtenerUno(idPrestamo));
+        presService.finalizarPrestamo(presService.obtenerPrestamo(idPrestamo));
         return ResponseEntity.ok().body(presService.mostrarPrestamo(idPrestamo));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id){
-        presService.eliminar(id);
+        presService.eliminarPrestamo(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +22,13 @@ public class Institucion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInstitucion;
 
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Los nombres no deben contener caracteres especiales")
+    @NotNull
     private String nombre;
 
     @Embedded
     @Valid
+    @NotNull
     private Direccion direccion;
 
 }

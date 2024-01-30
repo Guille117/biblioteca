@@ -5,8 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.Biblioteca.Excepciones.ValidacionException;
 import com.example.Biblioteca.modelo.Autor;
 import com.example.Biblioteca.repository.AutorRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class AutorService implements IGenericService<Autor>{
@@ -16,12 +19,20 @@ public class AutorService implements IGenericService<Autor>{
 
     @Override
     public void guardar(Autor t) {
-        autoRepo.save(t);
+        if(!autoRepo.existsByNombreAndApellido(t.getNombre(),t.getApellido())){     // si se agrega otra validación, crear una clase especial para validar autor 
+            autoRepo.save(t);
+        }else{
+            throw new ValidacionException("Nombre y apellido", "Existe ya un registro de este autor");
+        }
+        
     }
 
     @Override
     public Autor obtenerUno(Long id) {
-        return autoRepo.findById(id).orElse(null);
+        if(id == null){
+            throw new IllegalArgumentException("Debe ingresar id");
+        }
+        return autoRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Autor no encontrado"));
     }
 
     @Override
@@ -31,6 +42,9 @@ public class AutorService implements IGenericService<Autor>{
 
     @Override
     public void eliminar(Long idAutor) {
+        if(idAutor == null){
+            throw new IllegalArgumentException("Debe ingresar id");   
+        }
         autoRepo.deleteById(idAutor);
     }
 

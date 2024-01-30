@@ -2,6 +2,7 @@ package com.example.Biblioteca.dto;
 
 import com.example.Biblioteca.modelo.Institucion;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Getter @Setter
 public class DtoLector {
     @NotNull
+    @NotBlank
     private Long idLector;
 
     private String nombre;

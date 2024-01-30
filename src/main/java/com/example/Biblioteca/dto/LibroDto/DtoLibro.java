@@ -1,4 +1,4 @@
-package com.example.Biblioteca.dto;
+package com.example.Biblioteca.dto.LibroDto;
 
 import com.example.Biblioteca.modelo.Autor;
 import com.example.Biblioteca.modelo.Categoria;

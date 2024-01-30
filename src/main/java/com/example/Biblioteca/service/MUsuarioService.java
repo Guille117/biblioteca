@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.Biblioteca.Excepciones.ElementoRepetidoException;
 import com.example.Biblioteca.modelo.MUsuario;
-import com.example.Biblioteca.modelo.ROL;
 import com.example.Biblioteca.repository.MUsuarioRepository;
-import com.example.Biblioteca.repository.ROLRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 
@@ -21,29 +19,25 @@ public class MUsuarioService implements IGenericService<MUsuario>{
     @Autowired
     private PasswordEncoder enco;
     @Autowired
-    private ROLRepository rolRepo;
+    private RolService rolserv;
 
     @Override
     public void guardar(MUsuario usu) {
-        if(usuRepo.existsByAlias(usu.getAlias())){
+        if(usuRepo.existsByAlias(usu.getAlias())){    // si se agrega otra validación, crear una clase para validar MUsuario  
             throw new ElementoRepetidoException("alias","Este alias de usuario ya está en uso");
         }else{
-            ROL rol = (usu.getRol().getIdRol() != null) ? 
-                rolRepo.findById(usu.getRol().getIdRol()).orElse(null) :
-                rolRepo.findByNombre(usu.getRol().getNombre()); 
-
+            usu.setRol(rolserv.obtenerUno(usu.getRol().getIdRol()));
             usu.setContraseña(enco.encode(usu.getContraseña()));
-
-            if(rol != null) usu.setRol(rol);
 
             usuRepo.save(usu);
         }
-
-        
     }
 
     @Override
     public MUsuario obtenerUno(Long id) {
+        if(id == null){
+            throw new IllegalArgumentException("Debe ingresar id");
+        }
         return usuRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado."));
     }
 
@@ -54,6 +48,9 @@ public class MUsuarioService implements IGenericService<MUsuario>{
 
     @Override
     public void eliminar(Long id) {
+        if(id == null){
+            throw new IllegalArgumentException("Debe ingresar id");
+        }
         usuRepo.deleteById(id);
     }
 }

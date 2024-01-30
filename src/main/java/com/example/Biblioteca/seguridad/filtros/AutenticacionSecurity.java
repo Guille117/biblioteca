@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -32,6 +33,33 @@ public class AutenticacionSecurity extends UsernamePasswordAuthenticationFilter{
         this.secUtil = secUtil;
     }
 
+    /*
+     @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+
+    try {
+        // Tu código actual
+
+    } catch (HttpMessageNotReadableException e) {
+        // Manejo de errores de deserialización
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setContentType("application/json;charset=UTF-8");
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("error", "Error de formato JSON");
+        responseBody.put("message", e.getMessage());
+
+        // Usar ObjectMapper para escribir la respuesta JSON
+        response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+
+        // Importante: Detener la ejecución del filtro para evitar el flujo normal
+        return null;
+    }
+    // Resto de tu código
+}
+     */
+
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
         MUsuario usuario = null;
@@ -42,13 +70,29 @@ public class AutenticacionSecurity extends UsernamePasswordAuthenticationFilter{
             usuario = new ObjectMapper().readValue(request.getInputStream(), MUsuario.class);
             alias = usuario.getAlias();
             contraseña = usuario.getContraseña();
+        }catch (HttpMessageNotReadableException e) {
+            // Manejo de errores de deserialización
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json;charset=UTF-8");
+
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("error", "Error de formato JSON");
+            responseBody.put("message", e.getMessage());
+
+            // Usar ObjectMapper para escribir la respuesta JSON
+            try {
+                response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+            } catch (java.io.IOException e1) {
+                throw new RuntimeException(e);
+            }
+
+            // Importante: Detener la ejecución del filtro para evitar el flujo normal
+            return null;
         }catch(StreamReadException e){
             throw new RuntimeException(e);
-        } catch (DatabindException e) {
+        }catch (DatabindException e) {
             throw new RuntimeException(e);
-        } catch (java.io.IOException e) {
-            throw new RuntimeException(e);
-        }catch(IOException e){
+        }catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
 

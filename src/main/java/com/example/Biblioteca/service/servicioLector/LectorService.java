@@ -6,39 +6,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Biblioteca.dto.DtoLector;
-import com.example.Biblioteca.modelo.Institucion;
+import com.example.Biblioteca.dto.LectorDto.DtoLectorIngreso;
 import com.example.Biblioteca.modelo.Lector;
-import com.example.Biblioteca.repository.InstitucionRepository;
 import com.example.Biblioteca.repository.LectorRepository;
-import com.example.Biblioteca.validacion.validarLector.ValidarLector;
+import com.example.Biblioteca.service.InstitucionService;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class LectorService implements ILectorService{
-
     @Autowired
     private LectorRepository lecRepo;
     @Autowired
-    private InstitucionRepository instRepo;
-    @Autowired
-    private List<ValidarLector> validadores;
+    private InstitucionService inserv;
 
     @Override
     public void guardar(Lector t) {
-        validadores.forEach(v -> v.validar(t));
-
-        Institucion insti = null;
+        /*validadores.forEach(v -> v.validar(t));
 
         if(t.getInstitucion() != null){
-            insti = (t.getInstitucion().getIdInstitucion() != null) ?
-                    instRepo.findById(t.getInstitucion().getIdInstitucion()).orElse(null) :
-                    instRepo.findByNombre(t.getInstitucion().getNombre());
+           t.setInstitucion(inserv.obtenerUno(t.getInstitucion().getIdInstitucion()));
         }
-        
-        if(insti != null) t.setInstitucion(insti);
-        
-        lecRepo.save(t);
+
+        lecRepo.save(t);*/
     }
 
     @Override
@@ -65,31 +55,21 @@ public class LectorService implements ILectorService{
     public void actualizarLector(DtoLector lectorDto) {
         Lector lector = this.obtenerUno(lectorDto.getIdLector());
         
-        if(convertirALector(lectorDto) != null){
-             Lector lectorPivote = convertirALector(lectorDto);
-             validadores.forEach(v -> v.validar(lectorPivote));
-            Institucion ins = (lectorDto.getInstitucion().getIdInstitucion() != null) ?
-                    instRepo.findById(lectorDto.getInstitucion().getIdInstitucion()).orElse(null) :
-                    instRepo.findByNombre(lectorDto.getInstitucion().getNombre());
-            if(ins == null){
-                ins = lectorDto.getInstitucion();
-                instRepo.save(ins);
-            }
-            lector.setInstitucion(ins);
-        }
-        
         if(lectorDto.getNombre() != null){
             lector.setNombre(lectorDto.getNombre());
         }
 
-        if(lectorDto.getApellido() != null){
+        if(lector.getApellido() != null){
             lector.setApellido(lectorDto.getApellido());
         }
-        
-        if(lector.getNumTelefono() != null){
+
+        if(lectorDto.getNumTelefono() != null){
             lector.setNumTelefono(lectorDto.getNumTelefono());
         }
 
+        if(lectorDto.getInstitucion() != null){
+            lector.setInstitucion(inserv.obtenerUno(lectorDto.getIdLector()));            
+        }
         lecRepo.save(lector);
     }
 
@@ -100,5 +80,24 @@ public class LectorService implements ILectorService{
             lector = new Lector(null, null, null, lec.getInstitucion(), null);
         }
         return lector;
+    }
+
+    @Override
+    public Lector sevaLector(DtoLectorIngreso lec) {
+        return lecRepo.save(convertirALector(lec));
+    }
+
+
+
+    private Lector convertirALector(DtoLectorIngreso l1){       //convertir a partir de un dto de ingreso de lector a lector 
+        Lector lec = new Lector();
+        lec.setNombre(l1.getNombre());
+        lec.setApellido(l1.getApellido());
+        lec.setNumTelefono(l1.getTelefono());
+        
+        lec.setInstitucion((l1.getIdIstitucion() != null) ?         // si nos llega una institución la buscamos y setemos.
+                            inserv.obtenerUno(l1.getIdIstitucion()) : null);
+        
+        return lec;
     }
 }

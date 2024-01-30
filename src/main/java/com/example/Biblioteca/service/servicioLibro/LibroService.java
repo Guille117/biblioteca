@@ -1,14 +1,14 @@
 package com.example.Biblioteca.service.servicioLibro;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.Biblioteca.dto.DtoLibro;
-import com.example.Biblioteca.modelo.Autor;
-import com.example.Biblioteca.modelo.Categoria;
-import com.example.Biblioteca.modelo.Editorial;
+import com.example.Biblioteca.dto.LibroDto.DtoLibro;
+import com.example.Biblioteca.dto.LibroDto.DtoLibroIngreso;
+import com.example.Biblioteca.dto.LibroDto.DtoLibroMostrar;
 import com.example.Biblioteca.modelo.Libro;
 import com.example.Biblioteca.repository.LibroRepository;
 import com.example.Biblioteca.service.AutorService;
@@ -38,155 +38,134 @@ public class LibroService implements ILibroService{
 
 
     @Override
-    public void guardar(Libro t) {
-        validadores.forEach(v -> v.validar(t));
-        
-        Autor autor = (t.getAutor().getIdAutor() != null) ? 
-                autorService.obtenerUno(t.getAutor().getIdAutor()) :
-                autorService.buscarNombre(t.getAutor().getNombre(), t.getAutor().getApellido());
+    public Libro guardar(DtoLibroIngreso t) {
+        Libro libro = convertirALibro(t);
+        validadores.forEach(v -> v.validar(libro));
 
-        if(autor != null) t.setAutor(autor);
+        libro.setAutor(autorService.obtenerUno(libro.getAutor().getIdAutor()));
+        libro.setCategoria(categoriaService.obtenerUno(libro.getCategoria().getIdCategoria()));
+        libro.setEditorial(editorialService.obtenerUno(libro.getEditorial().getIdEditorial()));
 
-        Categoria categoria = (t.getCategoria().getIdCategoria() != null) ?
-                categoriaService.obtenerUno(t.getCategoria().getIdCategoria()) :
-                categoriaService.buscarNombre(t.getCategoria().getNombre());
+        existencia.validar(libro);
+        libRepo.save(libro);
+        return libro;
+    }
 
-        if(categoria != null) t.setCategoria(categoria);
-
-        Editorial editorial = (t.getEditorial().getIdEditorial() != null) ? 
-                editorialService.obtenerUno(t.getEditorial().getIdEditorial()) :
-                editorialService.buscarNombre(t.getEditorial().getNombre());
-
-        if(editorial != null) t.setEditorial(editorial);
-        
-        t.iniciarDisponible();
-        existencia.validar(t);
-        libRepo.save(t);
+    @Override       // Obtiene y retorna un libro, se usa especialmente en el módulo de préstamo
+    public Libro obtenerUnoLibro(Long id){
+        if(id == null){
+            throw new IllegalArgumentException("Debe ingresar id");
+        }
+        return libRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Libro no encontrado"));
+    }
+    
+    @Override       // obtiene un libro pero retorna un dto de libro, se usa para mostrar el libro
+    public DtoLibroMostrar obtenerUno(Long id) {
+        Libro l1 = this.obtenerUnoLibro(id);
+        return new DtoLibroMostrar(l1);
     }
 
     @Override
-    public Libro obtenerUno(Long id) {
-        return libRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Libro no encontrado."));
-    }
-
-    @Override
-    public List<Libro> obtenerTodos() {
-        return libRepo.findAll();
+    public List<DtoLibroMostrar> obtenerTodos() {
+        List<Libro> lib1 = libRepo.findAll();
+        return convertirADtoLibroMostrar(lib1);
     }       
 
     @Override
-    public List<Libro> MostrarPorCategoria(Long idCategoria) {
-        return libRepo.findByCategoriaIdCategoria(idCategoria);
+    public List<DtoLibroMostrar> MostrarPorCategoria(Long idCategoria) {
+        List<Libro> libPivote = libRepo.findByCategoriaIdCategoria(idCategoria);
+        return convertirADtoLibroMostrar(libPivote);
     }
 
     @Override
-    public List<Libro> MostrarPorEditorial(Long idEditorial) {
-        return libRepo.findByEditorialIdEditorial(idEditorial);
+    public List<DtoLibroMostrar> MostrarPorEditorial(Long idEditorial) {
+        List<Libro> libPivote = libRepo.findByEditorialIdEditorial(idEditorial);
+        return convertirADtoLibroMostrar(libPivote); 
     }
 
     @Override
-    public List<Libro> MostrarPorAutor(Long idAutor) {
-        return libRepo.findByAutorIdAutor(idAutor);
+    public List<DtoLibroMostrar> MostrarPorAutor(Long idAutor) {
+        List<Libro> libPivote = libRepo.findByAutorIdAutor(idAutor);
+        return convertirADtoLibroMostrar(libPivote); 
     }
 
     @Override
-    public List<Libro> MostrarEnPrestamo() {
-        return libRepo.findByEnPrestamoGreaterThan(0);
+    public List<DtoLibroMostrar> MostrarEnPrestamo() {
+        List<Libro> libPivote = libRepo.findByEnPrestamoGreaterThan(0);
+        return convertirADtoLibroMostrar(libPivote); 
     }
 
-        @Override
+    @Override
     public void eliminar(Long id) {
-        Libro lib = this.obtenerUno(id);
-        if(lib.getEnPrestamo() == 0){
-            libRepo.deleteById(id);
+        if(id == null){
+            throw new IllegalArgumentException("Debe ingresar id");
         }else{
-            throw new ValidationException("Para eliminar un libro, esto no debe estar en prestamo.");
+            DtoLibroMostrar lib = this.obtenerUno(id);
+            if(lib.enPrestamo() == 0){
+                libRepo.deleteById(id);
+            }else{
+                throw new ValidationException("Para eliminar un libro, esto no debe estar en prestamo.");
         }
+        }
+        
     }
 
     
     @Override
     public void actualizarLibro(DtoLibro lib) {
-        Libro libro = this.obtenerUno(lib.getIdLibro());
-       
-        Long idPivote = null;
-        String nomPivote = null;
-        String apePivote = null;
-
-        Libro libroPivote = convertirALibro(lib);
-        validadores.forEach(v -> v.validar(libroPivote));
-
-        if(lib.getAutor() != null){
-            idPivote = lib.getAutor().getIdAutor();
-            nomPivote = lib.getAutor().getNombre();
-            apePivote = lib.getAutor().getApellido();
-
-            Autor autor = (idPivote != null) ? autorService.obtenerUno(idPivote) : autorService.buscarNombre(nomPivote, apePivote);
-
-            if(autor == null && nomPivote != null && apePivote != null){
-                autor = lib.getAutor();
-                autorService.guardar(autor);
-            }
-
-            libro.setAutor(autor);
-        }
-
-
-        if(lib.getCategoria() != null){
-            idPivote = lib.getCategoria().getIdCategoria();
-            nomPivote = lib.getCategoria().getNombre();
-
-            Categoria categoria = (idPivote != null) ? categoriaService.obtenerUno(idPivote) : categoriaService.buscarNombre(nomPivote);
-
-            if(categoria == null && nomPivote != null){
-                categoria = lib.getCategoria();
-                categoriaService.guardar(categoria);
-            }
-
-            libro.setCategoria(categoria);
-        }
-
-
-        if(lib.getEditorial() != null){
-            idPivote = lib.getEditorial().getIdEditorial();
-            nomPivote = lib.getEditorial().getNombre();
-
-            Editorial editorial = (idPivote != null) ? editorialService.obtenerUno(idPivote) : editorialService.buscarNombre(nomPivote);
-
-            if(editorial == null && nomPivote != null){
-                editorial = lib.getEditorial();
-                editorialService.guardar(editorial);
-            }
-
-            libro.setEditorial(editorial);
-        }
         
+        Libro libro = libRepo.findById(lib.getIdLibro()).orElseThrow(() -> new EntityNotFoundException("Libro no encontrado."));
+
         if(lib.getNombre() != null){
             libro.setNombre(lib.getNombre());
         }
+
+        if(lib.getAutor() != null){
+            libro.setAutor(autorService.obtenerUno(lib.getAutor().getIdAutor()));
+        }
+
+        if(lib.getCategoria() != null){
+            libro.setCategoria(categoriaService.obtenerUno(lib.getCategoria().getIdCategoria()));
+        }
+
+        if(lib.getEditorial() != null){
+            libro.setEditorial(editorialService.obtenerUno(lib.getEditorial().getIdEditorial()));
+        }
+
         if(lib.getAnioPublicacion() != null){
             libro.setAnioPublicacion(lib.getAnioPublicacion());
         }
-        if(lib.getCantidad() != null){
-            libro.iniciarDisponible();
-            libro.setCantidad(lib.getCantidad());
-        }
+
         if(lib.getEdicion() != null){
             libro.setEdicion(lib.getEdicion());
         }
 
+        if(lib.getCantidad() != null){
+            libro.setCantidad(lib.getCantidad());
+        }
+
+        validadores.forEach(v -> v.validar(libro));
         libRepo.save(libro);
     }
 
+    private List<DtoLibroMostrar> convertirADtoLibroMostrar(List<Libro> libros){
+        List<DtoLibroMostrar> libsF = libros.stream().map(DtoLibroMostrar::new).collect(Collectors.toList());
 
-        public Libro convertirALibro(DtoLibro libroDto){
-        Libro lib = new Libro(null, libroDto.getNombre(), 
-                libroDto.getAutor(), libroDto.getCategoria(), 
-                libroDto.getEditorial(), libroDto.getAnioPublicacion(), 
-                libroDto.getEdicion(), libroDto.getCantidad(), 
-    null, null, null);
+        return libsF;
+    }
+
+    private Libro convertirALibro(DtoLibroIngreso libroDto){
+        Libro lib = new Libro();
+
+        lib.setNombre(libroDto.getNombre());
+        lib.setAutor(autorService.obtenerUno(libroDto.getIdAutor()));
+        lib.setCategoria(categoriaService.obtenerUno(libroDto.getIdCategoria()));
+        lib.setEditorial(editorialService.obtenerUno(libroDto.getIdEditorial()));
+        lib.setEdicion(libroDto.getEdicion());
+        lib.setAnioPublicacion(libroDto.getAnioPublicacion());
+        lib.setCantidad(libroDto.getCantidad());
+        lib.setDisponible(libroDto.getCantidad());      // seteamos el valor de cantidad a disponible por que al inicio disponible es igual a cantidad
         
         return lib;
     }
-
 }

@@ -17,23 +17,26 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.Biblioteca.dto.DtoLector;
+import com.example.Biblioteca.dto.LectorDto.DtoLectorIngreso;
 import com.example.Biblioteca.modelo.Lector;
 import com.example.Biblioteca.service.servicioLector.LectorService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("lector")
+@SecurityRequirement(name = "bearer-key")
 public class LectorController {
     
     @Autowired
     private LectorService lecServ;
 
     @PostMapping
-    public ResponseEntity<Lector> guardar(@Valid @RequestBody Lector lector, UriComponentsBuilder ur){
-        lecServ.guardar(lector);
-        URI url = ur.path("lector/{idLector}").buildAndExpand(lector.getIdLector()).toUri();
-        return ResponseEntity.created(url).body(lector);
+    public ResponseEntity<Lector> guardar(@Valid @RequestBody DtoLectorIngreso lector, UriComponentsBuilder ur){
+        Lector l = lecServ.sevaLector(lector);
+        URI url = ur.path("lector/{idLector}").buildAndExpand(l.getIdLector()).toUri();
+        return ResponseEntity.created(url).body(l);
     }
 
     @GetMapping("/{idLector}")

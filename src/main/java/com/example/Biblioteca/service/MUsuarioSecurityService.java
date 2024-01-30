@@ -24,7 +24,7 @@ public class MUsuarioSecurityService implements UserDetailsService{
     private ROLRepository rolRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         MUsuario usuario = usuRepo.findByAlias(username);
         if(usuario == null)throw new UsernameNotFoundException("Usuario no encontrado");
 

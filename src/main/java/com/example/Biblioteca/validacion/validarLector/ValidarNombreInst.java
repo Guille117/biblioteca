@@ -8,7 +8,7 @@ import com.example.Biblioteca.modelo.Lector;
 import com.example.Biblioteca.repository.InstitucionRepository;
 
 @Component
-public class ValidarNombreInst implements ValidarLector{
+public class ValidarNombreInst implements IValidarLector{
     @Autowired
     private InstitucionRepository insRepo;
 

@@ -9,7 +9,7 @@ import com.example.Biblioteca.repository.InstitucionRepository;
 
 
 @Component
-public class ValidarIdInsti implements ValidarLector{
+public class ValidarIdInsti implements IValidarLector{
      @Autowired
      private InstitucionRepository insRepo;
 

@@ -17,11 +17,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.example.Biblioteca.modelo.MUsuario;
 import com.example.Biblioteca.service.MUsuarioService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuario")
 @PreAuthorize("hasRole('ADMIN')")
+@SecurityRequirement(name = "bearer-key")
 public class MUsuarioController {
     @Autowired
     private MUsuarioService usuServ;

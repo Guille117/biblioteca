@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +20,7 @@ public class Editorial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEditorial;
 
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Los nombres de editorial no deben contener caracteres especiales")
+    @NotNull
     private String nombre;
 }
