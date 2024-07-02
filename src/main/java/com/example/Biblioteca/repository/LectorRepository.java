@@ -10,4 +10,6 @@ import com.example.Biblioteca.modelo.Lector;
 public interface LectorRepository extends JpaRepository<Lector, Long>{
     public abstract Lector findByNombreAndApellido(String nombre, String apellido);   
     public abstract List<Lector> findByInstitucionIdInstitucion(Long idInstitucion);
+    public abstract boolean existsByInstitucionIdInstitucion(Long idInsti);
+    public abstract boolean existsByNombreAndApellido(String nombre, String apellido);
 }

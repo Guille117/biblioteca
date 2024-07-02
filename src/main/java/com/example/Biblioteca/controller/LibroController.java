@@ -52,22 +52,22 @@ public class LibroController {
         return ResponseEntity.ok().body(libServ.obtenerTodos());
     }
 
-    @GetMapping("/categoria/{idCategoria}")
+    @GetMapping("/categoria/{idCategoria}")         // Mostrar por categoría
     public ResponseEntity<List<DtoLibroMostrar>> mostrarPorCategoria(@PathVariable Long idCategoria){
         return ResponseEntity.ok().body(libServ.MostrarPorCategoria(idCategoria));
     }
 
-    @GetMapping("/editorial/{idEditorial}")
+    @GetMapping("/editorial/{idEditorial}")         // mostrar por editorial
     public ResponseEntity<List<DtoLibroMostrar>> mostrarPorEditorial(@PathVariable Long idEditorial){
         return ResponseEntity.ok().body(libServ.MostrarPorEditorial(idEditorial));
     }
 
-    @GetMapping("/autor/{idAutor}")
+    @GetMapping("/autor/{idAutor}")         // mostrar por autor
     public ResponseEntity<List<DtoLibroMostrar>> mostrarPorAutor(@PathVariable Long idAutor){
         return ResponseEntity.ok().body(libServ.MostrarPorAutor(idAutor));
     }
 
-    @GetMapping("/enPrestamo")
+    @GetMapping("/enPrestamo")          // mostrar en prestamo
     public ResponseEntity<List<DtoLibroMostrar>> mostrarEnPrestamo(){
         return ResponseEntity.ok().body(libServ.MostrarEnPrestamo());
     }

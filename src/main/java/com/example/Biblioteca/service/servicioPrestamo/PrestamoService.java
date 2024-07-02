@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.Biblioteca.dto.DtoPrestamo;
+
+import com.example.Biblioteca.Excepciones.ValidacionException;
+import com.example.Biblioteca.dto.PrestamoDto.DtoPrestamoMostrar;
 import com.example.Biblioteca.dto.PrestamoDto.DtoPrestamoIngreso;
 import com.example.Biblioteca.modelo.Libro;
 import com.example.Biblioteca.modelo.Prestamo;
@@ -32,14 +34,9 @@ public class PrestamoService implements IPrestamoService{
     private List<IValidarPrestamo> validadores;
 
     @Override
-    @Transactional
     public Prestamo guardarPrestamo(DtoPrestamoIngreso t) {
         Prestamo pr = convertirAPrestamo(t);
         validadores.forEach(v -> v.validar(pr));
-
-        if(pr == null){
-            throw new IllegalArgumentException("Debe ingresar id");
-        }
         presRepo.save(pr);
         return pr;
     }
@@ -54,15 +51,15 @@ public class PrestamoService implements IPrestamoService{
 
     
     @Override
-    public DtoPrestamo mostrarPrestamo(Long id) {
+    public DtoPrestamoMostrar mostrarPrestamo(Long id) {
         if(id == null){
             throw new IllegalArgumentException("Debe ingresar id");
         }
-        return new DtoPrestamo(presRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado")));
+        return new DtoPrestamoMostrar(presRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado")));
     }
 
     @Override
-    public List<DtoPrestamo> mostrarPrestamos() {
+    public List<DtoPrestamoMostrar> mostrarPrestamos() {
         return convertirADtoPrestamos(presRepo.findAll());
     }
 
@@ -76,7 +73,7 @@ public class PrestamoService implements IPrestamoService{
     }
 
     @Override
-    public List<DtoPrestamo> mostrarActivos(boolean activo) {
+    public List<DtoPrestamoMostrar> mostrarActivos(boolean activo) {
         return convertirADtoPrestamos(presRepo.findByPrestamoActivo(activo));
     }
 
@@ -97,6 +94,11 @@ public class PrestamoService implements IPrestamoService{
     }
 
 
+    // metodo que nos permite realizar los cambios en un libro cuando se presta un libro o cuando se finaliza el prestamo del libro
+    // cuando se presta un libro, verifica si está disponible y resta 1 al atributo "disponible" del libro
+    // cuando finaliza un prestamo suma 1 a "disponible" del libro, representando la devolución del libro
+    // determinamos si es prestamo y finalizar un prestamo por parametro booleano "prestar"
+
     private void prestamo(Long idLib, boolean prestar){
         Libro libro = libServ.obtenerUnoLibro(idLib);
         if(prestar){
@@ -104,7 +106,8 @@ public class PrestamoService implements IPrestamoService{
                 libro.setDisponible(libro.getDisponible() - 1);
                 libro.setEnPrestamo(libro.getEnPrestamo() + 1);
             }else{
-                throw new RuntimeException("No hay suficientes libros disponibles");
+                throw new ValidacionException("Libro con ID "+idLib, "Libro no disponible.");
+
             }
            
         }else{
@@ -123,14 +126,14 @@ public class PrestamoService implements IPrestamoService{
         }
 
         pres1.setLibros(libros);
-        pres1.setLector(lecServ.obtenerUno(pr.getIdLector()));
+        pres1.setLector(lecServ.Retorna1Lector(pr.getIdLector()));
         pres1.setFechaVencimiento(pr.getFechaVencimiento());
     
         return pres1;
     }
 
-    private List<DtoPrestamo> convertirADtoPrestamos(List<Prestamo> pres){
-        List<DtoPrestamo> prestamos = pres.stream().map(DtoPrestamo::new).collect(Collectors.toList());
+    private List<DtoPrestamoMostrar> convertirADtoPrestamos(List<Prestamo> pres){
+        List<DtoPrestamoMostrar> prestamos = pres.stream().map(DtoPrestamoMostrar::new).collect(Collectors.toList());
         return prestamos;
     }
 

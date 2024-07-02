@@ -1,4 +1,4 @@
-package com.example.Biblioteca.validacion.ValidarPrestamo;
+ package com.example.Biblioteca.validacion.ValidarPrestamo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,8 @@ public class ValidarLector implements IValidarPrestamo{
 
     @Override
     public void validar(Prestamo p) {
-        Prestamo pres = null;
-        pres = preRepo.findByLectorIdLectorAndPrestamoActivo(p.getLector().getIdLector(), true);
-        if(pres != null && pres.getIdPrestamo() != p.getIdPrestamo()){
+
+        if(preRepo.existsByLectorIdLectorAndPrestamoActivo(p.getLector().getIdLector(), true)){
             throw new ValidacionException("Lector", "Este lector aún tiene un préstamo activo");
         }
     }

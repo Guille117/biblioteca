@@ -18,6 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+// no tiene restricciones o validaciones en este modelo ya que estos estan los respectivos DTOs
 public class Lector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

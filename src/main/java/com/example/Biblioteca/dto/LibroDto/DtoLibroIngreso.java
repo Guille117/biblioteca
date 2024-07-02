@@ -30,11 +30,12 @@ public class DtoLibroIngreso {
     private String anioPublicacion;
 
     @NotNull
+    @Min(1)
     private Integer edicion;
 
     @NotNull
-    @Max(value = 7)
+    @Max(value = 10)
     @Min(value = 1)
-    @Schema(description = "Valor entero no mayor a 7")
+    @Schema(description = "Valor entero no mayor a 10")         // anotación para documentacion
     private Integer cantidad;
 }

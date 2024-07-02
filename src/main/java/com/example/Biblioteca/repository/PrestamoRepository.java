@@ -8,7 +8,8 @@ import com.example.Biblioteca.modelo.Prestamo;
 
 @Repository
 public interface PrestamoRepository extends JpaRepository<Prestamo, Long>{
-    public abstract Prestamo findByLectorIdLectorAndPrestamoActivo(Long idLector, boolean prestamoActivo);
+    public abstract boolean existsByLectorIdLectorAndPrestamoActivo(Long idLector, boolean prestamoActivo);
     public abstract boolean existsByIdPrestamoAndPrestamoActivoTrue(Long idPrestamo);
+    public abstract boolean existsByLectorIdLector(Long idLector);
     public abstract List<Prestamo> findByPrestamoActivo(boolean activo);
 }

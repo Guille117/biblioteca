@@ -22,8 +22,8 @@ public class MUsuarioService implements IGenericService<MUsuario>{
     private RolService rolserv;
 
     @Override
-    public void guardar(MUsuario usu) {
-        if(usuRepo.existsByAlias(usu.getAlias())){    // si se agrega otra validación, crear una clase para validar MUsuario  
+    public void guardar(MUsuario usu) {// si se agrega otra validación, crear una clase para validar MUsuario  
+        if(usuRepo.existsByAlias(usu.getAlias())){    
             throw new ElementoRepetidoException("alias","Este alias de usuario ya está en uso");
         }else{
             usu.setRol(rolserv.obtenerUno(usu.getRol().getIdRol()));

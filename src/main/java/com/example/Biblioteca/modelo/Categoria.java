@@ -20,7 +20,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCategoria;
 
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚÑñ]+$", message = "Los nombres de categorías no deben contener caracteres especiales")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚÑñ\s]+$", message = "Los nombres de categorías no deben contener caracteres especiales")
     @NotNull
     private String nombre;
 }

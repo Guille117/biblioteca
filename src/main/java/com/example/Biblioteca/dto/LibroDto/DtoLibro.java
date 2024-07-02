@@ -1,8 +1,5 @@
 package com.example.Biblioteca.dto.LibroDto;
 
-import com.example.Biblioteca.modelo.Autor;
-import com.example.Biblioteca.modelo.Categoria;
-import com.example.Biblioteca.modelo.Editorial;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -22,9 +19,9 @@ public class DtoLibro {
     private Long idLibro;
 
     private String nombre;
-    private Autor autor;
-    private Categoria categoria; 
-    private Editorial editorial;
+    private Long idAutor;
+    private Long idCategoria; 
+    private Long idEditorial;
 
     @Size(min = 4, max = 4)
     @Pattern(regexp = "\\d+")
@@ -32,8 +29,8 @@ public class DtoLibro {
 
     private Integer edicion;
 
-    @Min(value =  0)
-    @Max(value =  7)
+    @Min(value =  1)
+    @Max(value =  10)
     private Integer cantidad;
 
 }

@@ -1,4 +1,4 @@
-package com.example.Biblioteca.dto;
+package com.example.Biblioteca.dto.PrestamoDto;
 
 import com.example.Biblioteca.modelo.Lector;
 
@@ -15,6 +15,7 @@ public class LectorPresDto {
     private String nombre;
     private String telefono;
 
+    // atributos del lector que se mostrarán en un préstamo
     public LectorPresDto(Lector lec){
         this.idLector = lec.getIdLector();
         this.nombre = lec.nombreCompletoLector();

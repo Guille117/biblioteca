@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.example.Biblioteca.dto.DtoPrestamo;
+import com.example.Biblioteca.dto.PrestamoDto.DtoPrestamoMostrar;
 import com.example.Biblioteca.dto.PrestamoDto.DtoPrestamoIngreso;
 import com.example.Biblioteca.modelo.Prestamo;
 import com.example.Biblioteca.service.servicioPrestamo.IPrestamoService;
@@ -40,17 +40,17 @@ public class PrestamoController {
     }
 
     @GetMapping("/{idPrestamo}")
-    public ResponseEntity<DtoPrestamo> obtener1(@PathVariable Long idPrestamo){
+    public ResponseEntity<DtoPrestamoMostrar> obtener1(@PathVariable Long idPrestamo){
         return ResponseEntity.ok().body(presService.mostrarPrestamo(idPrestamo));
     }
 
     @GetMapping()
-    public ResponseEntity<List<DtoPrestamo>> obtenerTodos(){
+    public ResponseEntity<List<DtoPrestamoMostrar>> obtenerTodos(){
         return ResponseEntity.ok().body(presService.mostrarPrestamos());
     }
 
     @GetMapping("/activos/{activo}")
-    public ResponseEntity<List<DtoPrestamo>> mostrarPorEstadoPrestamo(@PathVariable boolean activo){
+    public ResponseEntity<List<DtoPrestamoMostrar>> mostrarPorEstadoPrestamo(@PathVariable boolean activo){
         return ResponseEntity.ok().body(presService.mostrarActivos(activo));
     }
 

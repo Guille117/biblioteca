@@ -10,8 +10,8 @@ public class ValidarCantidadLibros implements IValidarPrestamo{
 
     @Override
     public void validar(Prestamo p) {
-        if(p.getLibros().size() > 5){
-            throw new ValidacionException("Libros", "Únicamente se permite entregar 5 libros por cada préstamo");
+        if(p.getLibros().size() > 3){
+            throw new ValidacionException("Libros", "Únicamente se permite entregar 3 libros por cada préstamo");
         }
     }
     

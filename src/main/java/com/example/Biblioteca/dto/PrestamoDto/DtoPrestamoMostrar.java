@@ -1,4 +1,4 @@
-package com.example.Biblioteca.dto;
+package com.example.Biblioteca.dto.PrestamoDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @Getter @Setter
-public class DtoPrestamo {
+public class DtoPrestamoMostrar {
     private Long idPrestamo;
     private List<LibroPresDto> libros;
     private LectorPresDto lector;
@@ -20,7 +20,7 @@ public class DtoPrestamo {
     private LocalDate fechaVencimiento;
     private boolean Activo;
 
-    public DtoPrestamo(Prestamo pres){
+    public DtoPrestamoMostrar(Prestamo pres){
         this.idPrestamo = pres.getIdPrestamo();
         this.libros = pres.getLibros().stream().map(LibroPresDto::new).collect(Collectors.toList());
         this.lector = new LectorPresDto(pres.getLector());

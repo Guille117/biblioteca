@@ -26,6 +26,7 @@ public class AutorizacionSecurity extends OncePerRequestFilter{
     private MUsuarioSecurityService usuServ;
 
     @Override
+    @SuppressWarnings("null")  // ignora las advertencias de java
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
        

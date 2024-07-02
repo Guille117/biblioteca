@@ -8,6 +8,6 @@ import com.example.Biblioteca.modelo.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long>{
-    public abstract Categoria findByNombre(String nombreCategoria);
+    // retorna true si ya existe una categoría con el nombre ingresado
     public abstract boolean existsByNombre(String nombre);
 }

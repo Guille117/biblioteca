@@ -12,14 +12,14 @@ import com.example.Biblioteca.modelo.Prestamo;
 
 @Component
 public class ValidarLibro implements IValidarPrestamo{
-
+        // determinamos que no haya libros repetidos en la solicitud de préstamo
     @Override
     public void validar(Prestamo p) {
-        List<Libro> libros = p.getLibros();
-        Set<Long> verificados = new HashSet<>();
+        List<Libro> libros = p.getLibros();         //obtenemos todos los libros
+        Set<Long> verificados = new HashSet<>();        // creamos un set que es tipo de lista que no permite elementos repetidos
 
-        for(Libro l: libros){
-            if(!verificados.add(l.getIdLibro())){
+        for(Libro l: libros){       // bucle for each
+            if(!verificados.add(l.getIdLibro())){       // intentamos agregar, sino se puede nos dará false, entonces lazamos excepción
                 throw new ValidacionException("Libros", "No se permite prestar dos o más libros iguales");
             }
         }

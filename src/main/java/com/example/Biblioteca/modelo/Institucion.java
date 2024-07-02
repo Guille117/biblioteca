@@ -22,7 +22,7 @@ public class Institucion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInstitucion;
 
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Los nombres no deben contener caracteres especiales")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚÑñ\s]+$", message = "Los nombres no deben contener caracteres especiales")
     @NotNull
     private String nombre;
 

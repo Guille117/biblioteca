@@ -20,7 +20,7 @@ public class Editorial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEditorial;
 
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Los nombres de editorial no deben contener caracteres especiales")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚÑñ\s]+$", message = "Los nombres de editorial no deben contener caracteres especiales")
     @NotNull
     private String nombre;
 }

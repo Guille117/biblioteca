@@ -5,7 +5,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.Biblioteca.Excepciones.ElementoRepetidoException;
 import com.example.Biblioteca.dto.LibroDto.DtoLibro;
 import com.example.Biblioteca.dto.LibroDto.DtoLibroIngreso;
 import com.example.Biblioteca.dto.LibroDto.DtoLibroMostrar;
@@ -14,8 +16,6 @@ import com.example.Biblioteca.repository.LibroRepository;
 import com.example.Biblioteca.service.AutorService;
 import com.example.Biblioteca.service.CategoriaService;
 import com.example.Biblioteca.service.EditorialService;
-import com.example.Biblioteca.validacion.ValidacionLibro.IValidarLibro;
-import com.example.Biblioteca.validacion.ValidacionLibro.ValidarExistencia;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -31,23 +31,19 @@ public class LibroService implements ILibroService{
     private EditorialService editorialService;
     @Autowired
     private CategoriaService categoriaService;
-    @Autowired
-    private List<IValidarLibro> validadores;
-    @Autowired
-    private ValidarExistencia existencia;
 
 
     @Override
     public Libro guardar(DtoLibroIngreso t) {
         Libro libro = convertirALibro(t);
-        validadores.forEach(v -> v.validar(libro));
-
-        libro.setAutor(autorService.obtenerUno(libro.getAutor().getIdAutor()));
-        libro.setCategoria(categoriaService.obtenerUno(libro.getCategoria().getIdCategoria()));
-        libro.setEditorial(editorialService.obtenerUno(libro.getEditorial().getIdEditorial()));
-
-        existencia.validar(libro);
-        libRepo.save(libro);
+        if(libro != null){
+            // validamos la inexistencia del libro, con nombre libro, autor y edición como campos de validación
+            if(!libRepo.existsByNombreAndEdicionAndAutorIdAutor(libro.getNombre(), libro.getEdicion(), libro.getAutor().getIdAutor())){
+                libRepo.save(libro);
+            }else{
+                throw new ElementoRepetidoException("Nombre, Edición o Autor", "Ya existe registro de este libro.");
+            }
+        }
         return libro;
     }
 
@@ -112,40 +108,43 @@ public class LibroService implements ILibroService{
 
     
     @Override
+    @Transactional
     public void actualizarLibro(DtoLibro lib) {
         
         Libro libro = libRepo.findById(lib.getIdLibro()).orElseThrow(() -> new EntityNotFoundException("Libro no encontrado."));
 
-        if(lib.getNombre() != null){
-            libro.setNombre(lib.getNombre());
-        }
+        if(libro.getEnPrestamo() == 0){
 
-        if(lib.getAutor() != null){
-            libro.setAutor(autorService.obtenerUno(lib.getAutor().getIdAutor()));
-        }
+            if(lib.getNombre() != null){
+                libro.setNombre(lib.getNombre());
+            }
 
-        if(lib.getCategoria() != null){
-            libro.setCategoria(categoriaService.obtenerUno(lib.getCategoria().getIdCategoria()));
-        }
+            if(lib.getIdAutor() != null){
+                libro.setAutor(autorService.obtenerUno(lib.getIdAutor()));
+            }
 
-        if(lib.getEditorial() != null){
-            libro.setEditorial(editorialService.obtenerUno(lib.getEditorial().getIdEditorial()));
-        }
+            if(lib.getIdCategoria() != null){
+                libro.setCategoria(categoriaService.obtenerUno(lib.getIdCategoria()));
+            }
 
-        if(lib.getAnioPublicacion() != null){
-            libro.setAnioPublicacion(lib.getAnioPublicacion());
-        }
+            if(lib.getIdEditorial() != null){
+                libro.setEditorial(editorialService.obtenerUno(lib.getIdEditorial()));
+            }
 
-        if(lib.getEdicion() != null){
-            libro.setEdicion(lib.getEdicion());
-        }
+            if(lib.getAnioPublicacion() != null){
+                libro.setAnioPublicacion(lib.getAnioPublicacion());
+            }
 
-        if(lib.getCantidad() != null){
-            libro.setCantidad(lib.getCantidad());
-        }
+            if(lib.getEdicion() != null){
+                libro.setEdicion(lib.getEdicion());
+            }
 
-        validadores.forEach(v -> v.validar(libro));
-        libRepo.save(libro);
+            if(lib.getCantidad() != null){
+                libro.setCantidad(lib.getCantidad());
+            }
+        }else{
+            throw new ElementoRepetidoException("Id Libro","Para realizar una actualización, el libro no debe estar en prestamo");
+        }
     }
 
     private List<DtoLibroMostrar> convertirADtoLibroMostrar(List<Libro> libros){
@@ -154,7 +153,7 @@ public class LibroService implements ILibroService{
         return libsF;
     }
 
-    private Libro convertirALibro(DtoLibroIngreso libroDto){
+    private Libro convertirALibro(DtoLibroIngreso libroDto){        // creamos un libro a partir de su dto de ingreso
         Libro lib = new Libro();
 
         lib.setNombre(libroDto.getNombre());

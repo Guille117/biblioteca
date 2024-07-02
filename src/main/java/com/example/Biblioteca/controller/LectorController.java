@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.example.Biblioteca.dto.DtoLector;
+import com.example.Biblioteca.dto.LectorDto.DtoLectorModificar;
+import com.example.Biblioteca.dto.LectorDto.DtoLectorMostrar;
 import com.example.Biblioteca.dto.LectorDto.DtoLectorIngreso;
-import com.example.Biblioteca.modelo.Lector;
 import com.example.Biblioteca.service.servicioLector.LectorService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -33,24 +33,24 @@ public class LectorController {
     private LectorService lecServ;
 
     @PostMapping
-    public ResponseEntity<Lector> guardar(@Valid @RequestBody DtoLectorIngreso lector, UriComponentsBuilder ur){
-        Lector l = lecServ.sevaLector(lector);
+    public ResponseEntity<DtoLectorMostrar> guardar(@Valid @RequestBody DtoLectorIngreso lector, UriComponentsBuilder ur){
+        DtoLectorMostrar l = lecServ.GuardarLector(lector);
         URI url = ur.path("lector/{idLector}").buildAndExpand(l.getIdLector()).toUri();
         return ResponseEntity.created(url).body(l);
     }
 
     @GetMapping("/{idLector}")
-    public ResponseEntity<Lector> mostrarLector(@PathVariable Long idLector){
+    public ResponseEntity<DtoLectorMostrar> mostrarLector(@PathVariable Long idLector){
         return ResponseEntity.ok().body(lecServ.obtenerUno(idLector));
     }
 
     @GetMapping
-    public ResponseEntity<List<Lector>> mostrarLectores(){
+    public ResponseEntity<List<DtoLectorMostrar>> mostrarLectores(){
         return ResponseEntity.ok().body(lecServ.obtenerTodos());
     }
 
     @GetMapping("/institucion/{idInstitucion}")
-    public ResponseEntity<List<Lector>> mostrarPorInstitucion(@PathVariable Long idInstitucion){
+    public ResponseEntity<List<DtoLectorMostrar>> mostrarPorInstitucion(@PathVariable Long idInstitucion){
         return ResponseEntity.ok().body(lecServ.mostrarPorInsitucion(idInstitucion));
     }
 
@@ -62,7 +62,7 @@ public class LectorController {
     }
 
     @PutMapping
-    public ResponseEntity<Lector> actualiarLector(@Valid @RequestBody DtoLector lecDto){
+    public ResponseEntity<DtoLectorMostrar> actualizarLector(@Valid @RequestBody DtoLectorModificar lecDto){
         lecServ.actualizarLector(lecDto);
         return ResponseEntity.ok().body(lecServ.obtenerUno(lecDto.getIdLector()));
     }

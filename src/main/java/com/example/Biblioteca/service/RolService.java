@@ -18,8 +18,8 @@ public class RolService implements IGenericService<ROL>{
 
 
     @Override
-    public void guardar(ROL t) {
-        if(!rolRepo.existsByNombre(t.getNombre())){     // si se agrega otra validación, crear una clase especial para validar rol
+    public void guardar(ROL t) {// si se agrega otra validación, crear una clase especial para validar rol
+        if(!rolRepo.existsByNombre(t.getNombre())){     
             rolRepo.save(t);
         }else{
             throw new ValidacionException("Nombre", "Existe ya un registro de este rol");
